@@ -4,13 +4,21 @@ export default {
       en: "My Element",
     },
   },
+  triggerEvents: [
+    {
+      name: "update:content",
+      label: {en: "On editor content update"},
+      event: {value: ""},
+      default: true
+    }
+  ],
   properties: {
-    textColor: {
+    content: {
       label: {
-        en: "Text color",
+        en: "Content",
       },
-      type: "Color",
-      defaultValue: "#F23636",
+      type: "Text",
+      defaultValue: "function x() {\n  console.log(\"Hello world!\");\n}",
     },
   },
 };
