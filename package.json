@@ -1,6 +1,6 @@
 {
   "name": "monaco",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "scripts": {
     "build": "weweb build",
     "serve": "weweb serve"

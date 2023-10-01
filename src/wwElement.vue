@@ -1,51 +1,53 @@
 <template>
-  <div>
-    <div
-        ref="editorContainer"
-        style="width: 800px; height: 600px; border: 1px solid grey"
-    ></div>
-  </div>
+  <div ref="container" class="monaco-editor-container"></div>
 </template>
 
 <script>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-
 export default {
-  setup() {
-    const editorContainer = ref(null);
-    let editor = null;
-
-    const initMonaco = () => {
-      editor = monaco.editor.create(editorContainer.value, {
-        value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join(
-            '\n'
-        ),
-        language: 'javascript',
-        theme: 'vs-dark',
-        minimap: {
-          enabled: false
+  name: "MonacoEditor",
+  mounted() {
+    this.loadMonacoScript().then(() => {
+      this.initializeMonacoEditor();
+    });
+  },
+  methods: {
+    loadMonacoScript() {
+      return new Promise((resolve, reject) => {
+        if (window.require) {
+          resolve();  // If the script is already loaded
+          return;
         }
+
+        const script = document.createElement('script');
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js";
+        script.onload = resolve;
+        script.onerror = reject;
+        document.body.appendChild(script);
       });
-    };
-
-    onMounted(() => {
-      initMonaco();
-    });
-
-    onBeforeUnmount(() => {
-      if (editor) {
-        editor.dispose();
-      }
-    });
-
-    return {
-      editorContainer,
-    };
+    },
+    initializeMonacoEditor() {
+      window.require.config({
+        paths: {
+          vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs",
+        },
+      });
+      window.require(["vs/editor/editor.main"], () => {
+        window.monaco.editor.create(this.$refs.container, {
+          value: `function x() {
+  console.log("Hello world!");
+}`,
+          language: "javascript",
+          theme: "vs-dark",
+        });
+      });
+    }
   },
 };
 </script>
 
 <style scoped>
-/* You can add additional styles here if needed */
+.monaco-editor-container {
+  height: 400px;
+  border: 1px solid black;
+}
 </style>
